@@ -166,6 +166,22 @@ window.setInterval(() => {
   console.log(asteroids);
 }, 3000);
 
+function circleCollision(circle1, circle2) {
+  const xDifference = circle2.position.x - circle1.position.x;
+  const yDifference = circle2.position.y - circle1.position.y;
+
+  const distance = Math.sqrt(
+    xDifference * xDifference + yDifference * yDifference
+  );
+
+  if (distance <= circle1.radius + circle2.radius) {
+    console.log("two have collided");
+    return true;
+  }
+
+  return false;
+}
+
 function animate() {
   window.requestAnimationFrame(animate);
 
@@ -201,11 +217,19 @@ function animate() {
       asteroid.position.y - asteroid.radius > canvas.height ||
       asteroid.position.y + asteroid.radius < 0
     ) {
-      asteroids.splice(i, 1)
+      asteroids.splice(i, 1);
+    }
+
+    //projectiles
+    for (let j = projectiles.length - 1; j >= 0; j--) {
+      const projejetile = projectiles[j];
+
+      if (circleCollision(asteroid, projejetile)) {
+        asteroids.splice(i, 1);
+        projectiles.splice(j, 1);
+      }
     }
   }
-
-  
 
   if (keys.w.pressed) {
     player.velocity.x = Math.cos(player.rotation) * SPEED;
@@ -256,7 +280,6 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("keyup", (event) => {
   switch (event.code) {
     case "KeyW":
-      console.log("w was pressed");
       keys.w.pressed = false;
       break;
     case "KeyA":
